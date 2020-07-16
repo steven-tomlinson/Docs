@@ -5,6 +5,7 @@ description: Discover External OAuth authentication providers that work with ASP
 ms.author: riande
 ms.custom: mvc
 ms.date: 11/11/2018
+no-loc: [Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: security/authentication/otherlogins
 ---
 # External OAuth authentication providers
@@ -31,7 +32,7 @@ The following list includes common external OAuth authentication providers that 
 
 * [Flickr](https://www.flickr.com/services/apps/create) ([Instructions](https://www.flickr.com/services/api/auth.oauth.html))
 
-* [Dribble](https://dribbble.com/signup) ([Instructions](http://developer.dribbble.com/v1/oauth/))
+* [Dribble](https://dribbble.com/signup) ([Instructions](https://developer.dribbble.com/v1/oauth/))
 
 * [Vimeo](https://vimeo.com/join) ([Instructions](https://developer.vimeo.com/api/authentication))
 

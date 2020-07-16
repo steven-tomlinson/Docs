@@ -3,7 +3,8 @@ title: Layout in ASP.NET Core
 author: ardalis
 description: Learn how to use common layouts, share directives, and run common code before rendering views in an ASP.NET Core app.
 ms.author: riande
-ms.date: 02/26/2019
+ms.date: 07/30/2019
+no-loc: [Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: mvc/views/layout
 ---
 # Layout in ASP.NET Core
@@ -29,15 +30,15 @@ Most web apps have a common layout that provides the user with a consistent expe
 
 Common HTML structures such as scripts and stylesheets are also frequently used by many pages within an app. All of these shared elements may be defined in a *layout* file, which can then be referenced by any view used within the app. Layouts reduce duplicate code in views.
 
-By convention, the default layout for an ASP.NET Core app is named *_Layout.cshtml*. The layout file for new ASP.NET Core projects created with the templates:
+By convention, the default layout for an ASP.NET Core app is named *_Layout.cshtml*. The layout files for new ASP.NET Core projects created with the templates are:
 
 * Razor Pages: *Pages/Shared/_Layout.cshtml*
 
-  ![pages folder in solutions explorer](layout/_static/rp-web-project-views.png)
+  ![Pages folder in Solution Explorer](layout/_static/rp-web-project-views.png)
 
 * Controller with views: *Views/Shared/_Layout.cshtml*
 
- ![views folder in solutions explorer](layout/_static/mvc-web-project-views.png)
+  ![Views folder in Solution Explorer](layout/_static/mvc-web-project-views.png)
 
 The layout defines a top level template for views in the app. Apps don't require a layout. Apps can define more than one layout, with different views specifying different layouts.
 
@@ -56,15 +57,15 @@ The layout specified can use a full path (for example, */Pages/Shared/_Layout.cs
 By default, every layout must call `RenderBody`. Wherever the call to `RenderBody` is placed, the contents of the view will be rendered.
 
 <a name="layout-sections-label"></a>
-
+<!-- https://stackoverflow.com/questions/23327578 -->
 ### Sections
 
 A layout can optionally reference one or more *sections*, by calling `RenderSection`. Sections provide a way to organize where certain page elements should be placed. Each call to `RenderSection` can specify whether that section is required or optional:
 
 ```html
-@section Scripts {
-    @RenderSection("Scripts", required: false)
-}
+<script type="text/javascript" src="~/scripts/global.js"></script>
+
+@RenderSection("Scripts", required: false)
 ```
 
 If a required section isn't found, an exception is thrown. Individual views specify the content to be rendered within a section using the `@section` Razor syntax. If a page or view defines a section, it must be rendered (or an error will occur).
@@ -73,7 +74,7 @@ An example `@section` definition in Razor Pages view:
 
 ```html
 @section Scripts {
-     <script type="text/javascript" src="/scripts/main.js"></script>
+     <script type="text/javascript" src="~/scripts/main.js"></script>
 }
 ```
 
@@ -103,7 +104,7 @@ The body and every section in a Razor page must be either rendered or ignored.
 
 ## Importing Shared Directives
 
-Views and pages can use Razor directives to importing namespaces and use [dependency injection](dependency-injection.md). Directives shared by many views may be specified in a common *_ViewImports.cshtml* file. The `_ViewImports` file supports the following directives:
+Views and pages can use Razor directives to import namespaces and use [dependency injection](dependency-injection.md). Directives shared by many views may be specified in a common *_ViewImports.cshtml* file. The `_ViewImports` file supports the following directives:
 
 * `@addTagHelper`
 * `@removeTagHelper`

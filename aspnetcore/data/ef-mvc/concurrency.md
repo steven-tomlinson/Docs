@@ -2,10 +2,11 @@
 title: "Tutorial: Handle concurrency - ASP.NET MVC with EF Core"
 description: "This tutorial shows how to handle conflicts when multiple users update the same entity at the same time."
 author: rick-anderson
-ms.author: tdykstra
+ms.author: riande
 ms.custom: mvc
-ms.date: 02/05/2019
+ms.date: 03/27/2019
 ms.topic: tutorial
+no-loc: [Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: data/ef-mvc/concurrency
 ---
 
@@ -34,7 +35,7 @@ In this tutorial, you:
 
 ## Prerequisites
 
-* [Update related data with EF Core in an ASP.NET Core MVC web app](update-related-data.md)
+* [Update related data](update-related-data.md)
 
 ## Concurrency conflicts
 
@@ -111,11 +112,11 @@ By adding a property you changed the database model, so you need to do another m
 
 Save your changes and build the project, and then enter the following commands in the command window:
 
-```console
+```dotnetcli
 dotnet ef migrations add RowVersion
 ```
 
-```console
+```dotnetcli
 dotnet ef database update
 ```
 
@@ -135,7 +136,7 @@ The scaffolding engine created a RowVersion column in the Index view, but that f
 
 Replace the code in *Views/Departments/Index.cshtml* with the following code.
 
-[!code-html[](intro/samples/cu/Views/Departments/Index.cshtml?highlight=4,7,44)]
+[!code-cshtml[](intro/samples/cu/Views/Departments/Index.cshtml?highlight=4,7,44)]
 
 This changes the heading to "Departments", deletes the RowVersion column, and shows full name instead of first name for the administrator.
 
@@ -143,13 +144,13 @@ This changes the heading to "Departments", deletes the RowVersion column, and sh
 
 In both the HttpGet `Edit` method and the `Details` method, add `AsNoTracking`. In the HttpGet `Edit` method, add eager loading for the Administrator.
 
-[!code-csharp[](intro/samples/cu/Controllers/DepartmentsController.cs?name=snippet_EagerLoading&highlight=2,3)]
+[!code-csharp[](intro/samples/cu/Controllers/DepartmentsController.cs?name=snippet_EagerLoading)]
 
 Replace the existing code for the HttpPost `Edit` method with the following code:
 
 [!code-csharp[](intro/samples/cu/Controllers/DepartmentsController.cs?name=snippet_EditPost)]
 
-The code begins by trying to read the department to be updated. If the `SingleOrDefaultAsync` method returns null, the department was deleted by another user. In that case the code uses the posted form values to create a department entity so that the Edit page can be redisplayed with an error message. As an alternative, you wouldn't have to re-create the department entity if you display only an error message without redisplaying the department fields.
+The code begins by trying to read the department to be updated. If the `FirstOrDefaultAsync` method returns null, the department was deleted by another user. In that case the code uses the posted form values to create a department entity so that the Edit page can be redisplayed with an error message. As an alternative, you wouldn't have to re-create the department entity if you display only an error message without redisplaying the department fields.
 
 The view stores the original `RowVersion` value in a hidden field, and this method receives that value in the `rowVersion` parameter. Before you call `SaveChanges`, you have to put that original `RowVersion` property value in the `OriginalValues` collection for the entity.
 
@@ -185,7 +186,7 @@ In *Views/Departments/Edit.cshtml*, make the following changes:
 
 * Add a "Select Administrator" option to the drop-down list.
 
-[!code-html[](intro/samples/cu/Views/Departments/Edit.cshtml?highlight=16,34-36)]
+[!code-cshtml[](intro/samples/cu/Views/Departments/Edit.cshtml?highlight=16,34-36)]
 
 ## Test concurrency conflicts
 
@@ -245,7 +246,7 @@ If a concurrency error is caught, the code redisplays the Delete confirmation pa
 
 In *Views/Departments/Delete.cshtml*, replace the scaffolded code with the following code that adds an error message field and hidden fields for the DepartmentID and RowVersion properties. The changes are highlighted.
 
-[!code-html[](intro/samples/cu/Views/Departments/Delete.cshtml?highlight=9,38,44,45,48)]
+[!code-cshtml[](intro/samples/cu/Views/Departments/Delete.cshtml?highlight=9,38,44,45,48)]
 
 This makes the following changes:
 
@@ -275,15 +276,15 @@ You can optionally clean up scaffolded code in the Details and Create views.
 
 Replace the code in *Views/Departments/Details.cshtml* to delete the RowVersion column and show the full name of the Administrator.
 
-[!code-html[](intro/samples/cu/Views/Departments/Details.cshtml?highlight=35)]
+[!code-cshtml[](intro/samples/cu/Views/Departments/Details.cshtml?highlight=35)]
 
 Replace the code in *Views/Departments/Create.cshtml* to add a Select option to the drop-down list.
 
-[!code-html[](intro/samples/cu/Views/Departments/Create.cshtml?highlight=32-34)]
+[!code-cshtml[](intro/samples/cu/Views/Departments/Create.cshtml?highlight=32-34)]
 
 ## Get the code
 
-[Download or view the completed application.](https://github.com/aspnet/Docs/tree/master/aspnetcore/data/ef-mvc/intro/samples/cu-final)
+[Download or view the completed application.](https://github.com/dotnet/AspNetCore.Docs/tree/master/aspnetcore/data/ef-mvc/intro/samples/cu-final)
 
 ## Additional resources
 
@@ -304,6 +305,7 @@ In this tutorial, you:
 > * Updated the Delete page
 > * Updated Details and Create views
 
-Advance to the next article to learn how to implement table-per-hierarchy inheritance for the Instructor and Student entities.
+Advance to the next tutorial to learn how to implement table-per-hierarchy inheritance for the Instructor and Student entities.
+
 > [!div class="nextstepaction"]
-> [Implement table-per-hierarchy inheritance](inheritance.md)
+> [Next: Implement table-per-hierarchy inheritance](inheritance.md)

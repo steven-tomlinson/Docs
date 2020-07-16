@@ -5,7 +5,8 @@ description: Use Identity with a Single Page App hosted inside an ASP.NET Core a
 monikerRange: '>= aspnetcore-3.0'
 ms.author: scaddie
 ms.custom: mvc
-ms.date: 03/07/2019
+ms.date: 11/08/2019
+no-loc: [Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: security/authentication/identity/spa
 ---
 # Authentication and authorization for SPAs
@@ -20,13 +21,13 @@ User authentication and authorization can be used with both Angular and React SP
 
 **Angular**:
 
-```console
+```dotnetcli
 dotnet new angular -o <output_directory_name> -au Individual
 ```
 
 **React**:
 
-```console
+```dotnetcli
 dotnet new react -o <output_directory_name> -au Individual
 ```
 
@@ -38,6 +39,8 @@ The following sections describe additions to the project when authentication sup
 
 ### Startup class
 
+The following code examples rely on the [Microsoft.AspNetCore.ApiAuthorization.IdentityServer](https://www.nuget.org/packages/Microsoft.AspNetCore.ApiAuthorization.IdentityServer) NuGet package. The examples configure API authentication and authorization using the <xref:Microsoft.Extensions.DependencyInjection.IdentityServerBuilderConfigurationExtensions.AddApiAuthorization%2A> and <xref:Microsoft.AspNetCore.ApiAuthorization.IdentityServer.ApiResourceCollection.AddIdentityServerJwt%2A> extension methods. Projects using the React or Angular SPA project templates with authentication include a reference to this package.
+
 The `Startup` class has the following additions:
 
 * Inside the `Startup.ConfigureServices` method:
@@ -48,11 +51,10 @@ The `Startup` class has the following additions:
         options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
 
     services.AddDefaultIdentity<ApplicationUser>()
-        .AddDefaultUI(UIFramework.Bootstrap4)
         .AddEntityFrameworkStores<ApplicationDbContext>();
     ```
 
-  * IdentityServer with an additional `AddApiAuthorization` helper method that setups some default ASP.NET Core conventions on top of IdentityServer:
+  * IdentityServer with an additional `AddApiAuthorization` helper method that sets up some default ASP.NET Core conventions on top of IdentityServer:
 
     ```csharp
     services.AddIdentityServer()
@@ -87,9 +89,9 @@ This helper method configures IdentityServer to use our supported configuration.
 
 This helper method configures a policy scheme for the app as the default authentication handler. The policy is configured to let Identity handle all requests routed to any subpath in the Identity URL space "/Identity". The `JwtBearerHandler` handles all other requests. Additionally, this method registers an `<<ApplicationName>>API` API resource with IdentityServer with a default scope of `<<ApplicationName>>API` and configures the JWT Bearer token middleware to validate tokens issued by IdentityServer for the app.
 
-### SampleDataController
+### WeatherForecastController
 
-In the *Controllers\SampleDataController.cs* file, notice the `[Authorize]` attribute applied to the class that indicates that the user needs to be authorized based on the default policy to access the resource. The default authorization policy happens to be configured to use the default authentication scheme, which is set up by `AddIdentityServerJwt` to the policy scheme that was mentioned above, making the `JwtBearerHandler` configured by such helper method the default handler for requests to the app.
+In the *Controllers\WeatherForecastController.cs* file, notice the `[Authorize]` attribute applied to the class that indicates that the user needs to be authorized based on the default policy to access the resource. The default authorization policy happens to be configured to use the default authentication scheme, which is set up by `AddIdentityServerJwt` to the policy scheme that was mentioned above, making the `JwtBearerHandler` configured by such helper method the default handler for requests to the app.
 
 ### ApplicationDbContext
 
@@ -161,6 +163,46 @@ Now that you've seen the main components of the solution, you can take a deeper 
 
 By default, the system is configured to easily require authorization for new APIs. To do so, create a new controller and add the `[Authorize]` attribute to the controller class or to any action within the controller.
 
+## Customize the API authentication handler
+
+To customize the configuration of the API's JWT handler, configure its <xref:Microsoft.AspNetCore.Builder.JwtBearerOptions> instance:
+
+```csharp
+services.AddAuthentication()
+    .AddIdentityServerJwt();
+
+services.Configure<JwtBearerOptions>(
+    IdentityServerJwtConstants.IdentityServerJwtBearerScheme,
+    options =>
+    {
+        ...
+    });
+```
+
+The API's JWT handler raises events that enable control over the authentication process using `JwtBearerEvents`. To provide support for API authorization, `AddIdentityServerJwt` registers its own event handlers.
+
+To customize the handling of an event, wrap the existing event handler with additional logic as required. For example:
+
+```csharp
+services.Configure<JwtBearerOptions>(
+    IdentityServerJwtConstants.IdentityServerJwtBearerScheme,
+    options =>
+    {
+        var onTokenValidated = options.Events.OnTokenValidated;       
+        
+        options.Events.OnTokenValidated = async context =>
+        {
+            await onTokenValidated(context);
+            ...
+        }
+    });
+```
+
+In the preceding code, the `OnTokenValidated` event handler is replaced with a custom implementation. This implementation:
+
+1. Calls the original implementation provided by the API authorization support.
+1. Run its own custom logic.
+
 ## Protect a client-side route (Angular)
 
 Protecting a client-side route is done by adding the authorize guard to the list of guards to run when configuring a route. As an example, you can see how the `fetch-data` route is configured within the main app Angular module:
@@ -224,9 +266,11 @@ To deploy the app to production, the following resources need to be provisioned:
   * It can be generated through standard tools like PowerShell or OpenSSL.
   * It can be installed into the certificate store on the target machines or deployed as a *.pfx* file with a strong password.
 
-### Example: Deploy to Azure Websites
+### Example: Deploy to Azure App Service
 
-This section describes deploying the app to Azure websites using a certificate stored in the certificate store. To modify the app to load a certificate from the certificate store, the App Service plan needs to be on at least the Standard tier when you configure in a later step. In the app's *appsettings.json* file, modify the `IdentityServer` section to include the key details:
+This section describes deploying the app to Azure App Service using a certificate stored in the certificate store. To modify the app to load a certificate from the certificate store, a Standard tier service plan or better is required when you configure the app in the Azure portal in a later step.
+
+In the app's *appsettings.json* file, modify the `IdentityServer` section to include the key details:
 
 ```json
 "IdentityServer": {
@@ -239,17 +283,17 @@ This section describes deploying the app to Azure websites using a certificate s
 }
 ```
 
-* The name property on certificate corresponds with the distinguished subject for the certificate.
-* The store location represents where to load the certificate from (`CurrentUser` or `LocalMachine`).
 * The store name represents the name of the certificate store where the certificate is stored. In this case, it points to the personal user store.
+* The store location represents where to load the certificate from (`CurrentUser` or `LocalMachine`).
+* The name property on certificate corresponds with the distinguished subject for the certificate.
 
-To deploy to Azure Websites, deploy the app following the steps in [Deploy the app to Azure](xref:tutorials/publish-to-azure-webapp-using-vs#deploy-the-app-to-azure) to create the necessary Azure resources and deploy the app to production.
+To deploy to Azure App Service, follow the steps in [Deploy the app to Azure](xref:tutorials/publish-to-azure-webapp-using-vs#deploy-the-app-to-azure), which explains how to create the necessary Azure resources and deploy the app to production.
 
-After following the preceding instructions, the app is deployed to Azure but isn't yet functional. The certificate used by the app still needs to be set up. Locate the thumbprint for the certificate to be used, and follow the steps described in [Load your certificates](/azure/app-service/app-service-web-ssl-cert-load#load-your-certificates).
+After following the preceding instructions, the app is deployed to Azure but isn't yet functional. The certificate used by the app must be configured in the Azure portal. Locate the thumbprint for the certificate and follow the steps described in [Load your certificates](/azure/app-service/app-service-web-ssl-cert-load#load-the-certificate-in-code).
 
-While these steps mention SSL, there's a **Private certificates** section on the portal where you can upload the provisioned certificate to use with the app.
+While these steps mention SSL, there's a **Private certificates** section in the Azure portal where you can upload the provisioned certificate to use with the app.
 
-After this step, restart the app and it should be functional.
+After configuring the app and the app's settings in the Azure portal, restart the app in the portal.
 
 ## Other configuration options
 
@@ -327,3 +371,4 @@ AddApiAuthorization<ApplicationUser, ApplicationDbContext>(options =>
 
 * <xref:spa/angular>
 * <xref:spa/react>
+* <xref:security/authentication/scaffold-identity>

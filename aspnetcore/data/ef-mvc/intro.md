@@ -2,46 +2,51 @@
 title: "Tutorial: Get started with EF Core in an ASP.NET MVC web app"
 description: "This is the first in a series of tutorials that explain how to build the Contoso University sample application from scratch."
 author: rick-anderson
-ms.author: tdykstra
+ms.author: riande
 ms.custom: mvc
 ms.date: 02/06/2019
 ms.topic: tutorial
+no-loc: [Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: data/ef-mvc/intro
 ---
-
 # Tutorial: Get started with EF Core in an ASP.NET MVC web app
+
+This tutorial has **not** been updated to ASP.NET Core 3.0. The [Razor Pages version](xref:data/ef-rp/intro) has been updated. Most of the code changes for the ASP.NET Core 3.0 and later version of this tutorial:
+
+* Are in the *Startup.cs* and *Program.cs* files.
+* Can be found in the [Razor Pages version](xref:data/ef-rp/intro). 
+
+For information on when this might be updated, see [this GitHub issue](https://github.com/dotnet/AspNetCore.Docs/issues/13920).
 
 [!INCLUDE [RP better than MVC](~/includes/RP-EF/rp-over-mvc.md)]
 
-The Contoso University sample web application demonstrates how to create ASP.NET Core 2.2 MVC web applications using Entity Framework (EF) Core 2.0 and Visual Studio 2017.
+The Contoso University sample web application demonstrates how to create ASP.NET Core 2.2 MVC web applications using Entity Framework (EF) Core 2.2 and Visual Studio 2017 or 2019.
 
 The sample application is a web site for a fictional Contoso University. It includes functionality such as student admission, course creation, and instructor assignments. This is the first in a series of tutorials that explain how to build the Contoso University sample application from scratch.
-
-EF Core 2.0 is the latest version of EF but doesn't yet have all the features of EF 6.x. For information about how to choose between EF 6.x and EF Core, see [EF Core vs. EF6.x](/ef/efcore-and-ef6/). If you choose EF 6.x, see [the previous version of this tutorial series](/aspnet/mvc/overview/getting-started/getting-started-with-ef-using-mvc/creating-an-entity-framework-data-model-for-an-asp-net-mvc-application).
-
-> [!NOTE]
-> For the ASP.NET Core 1.1 version of this tutorial, see the [VS 2017 Update 2 version of this tutorial in PDF format](https://webpifeed.blob.core.windows.net/webpifeed/Partners/efmvc1.1.pdf).
 
 In this tutorial, you:
 
 > [!div class="checklist"]
-> * Create ASP.NET Core MVC web app
+> * Create an ASP.NET Core MVC web app
 > * Set up the site style
 > * Learn about EF Core NuGet packages
 > * Create the data model
 > * Create the database context
-> * Register the SchoolContext
-> * Initialize DB with test data
-> * Create controller and views
+> * Register the context for dependency injection
+> * Initialize the database with test data
+> * Create a controller and views
 > * View the database
 
 ## Prerequisites
 
-[!INCLUDE [](~/includes/net-core-prereqs.md)]
+* [.NET Core SDK 2.2](https://dotnet.microsoft.com/download)
+* [Visual Studio 2019](https://visualstudio.microsoft.com/downloads/?utm_medium=microsoft&utm_source=docs.microsoft.com&utm_campaign=inline+link&utm_content=download+vs2019) with the following workloads:
+  * **ASP.NET and web development** workload
+  * **.NET Core cross-platform development** workload
 
 ## Troubleshooting
 
-If you run into a problem you can't resolve, you can generally find the solution by comparing your code to the [completed project](https://github.com/aspnet/Docs/tree/master/aspnetcore/data/ef-mvc/intro/samples/cu-final). For a list of common errors and how to solve them, see [the Troubleshooting section of the last tutorial in the series](advanced.md#common-errors). If you don't find what you need there, you can post a question to StackOverflow.com for [ASP.NET Core](https://stackoverflow.com/questions/tagged/asp.net-core) or [EF Core](https://stackoverflow.com/questions/tagged/entity-framework-core).
+If you run into a problem you can't resolve, you can generally find the solution by comparing your code to the [completed project](https://github.com/dotnet/AspNetCore.Docs/tree/master/aspnetcore/data/ef-mvc/intro/samples/cu-final). For a list of common errors and how to solve them, see [the Troubleshooting section of the last tutorial in the series](advanced.md#common-errors). If you don't find what you need there, you can post a question to StackOverflow.com for [ASP.NET Core](https://stackoverflow.com/questions/tagged/asp.net-core) or [EF Core](https://stackoverflow.com/questions/tagged/entity-framework-core).
 
 > [!TIP]
 > This is a series of 10 tutorials, each of which builds on what is done in earlier tutorials. Consider saving a copy of the project after each successful tutorial completion. Then if you run into problems, you can start over from the previous tutorial instead of going back to the beginning of the whole series.
@@ -56,11 +61,9 @@ Users can view and update student, course, and instructor information. Here are 
 
 ![Students Edit page](intro/_static/student-edit.png)
 
-The UI style of this site has been kept close to what's generated by the built-in templates, so that the tutorial can focus mainly on how to use the Entity Framework.
+## Create web app
 
-## Create ASP.NET Core MVC web app
-
-Open Visual Studio and create a new ASP.NET Core C# web project named "ContosoUniversity".
+* Open Visual Studio.
 
 * From the **File** menu, select **New > Project**.
 
@@ -72,17 +75,15 @@ Open Visual Studio and create a new ASP.NET Core C# web project named "ContosoUn
 
   ![New Project dialog](intro/_static/new-project2.png)
 
-* Wait for the **New ASP.NET Core Web Application (.NET Core)** dialog to appear
+* Wait for the **New ASP.NET Core Web Application** dialog to appear.
 
-  ![New ASP.NET Core Project dialog](intro/_static/new-aspnet2.png)
-
-* Select **ASP.NET Core 2.2** and the **Web Application (Model-View-Controller)** template.
-
-  **Note:** This tutorial requires ASP.NET Core 2.2 and EF Core 2.0 or later.
+* Select **.NET Core**, **ASP.NET Core 2.2** and the **Web Application (Model-View-Controller)** template.
 
 * Make sure **Authentication** is set to **No Authentication**.
 
-* Click **OK**
+* Select **OK**
+
+  ![New ASP.NET Core Project dialog](intro/_static/new-aspnet2.png)
 
 ## Set up the site style
 
@@ -96,7 +97,7 @@ Open *Views/Shared/_Layout.cshtml* and make the following changes:
 
 The changes are highlighted.
 
-[!code-cshtml[](intro/samples/cu/Views/Shared/_Layout.cshtml?highlight=6,32-36,51)]
+[!code-cshtml[](intro/samples/cu/Views/Shared/_Layout.cshtml?highlight=6,34-48,63)]
 
 In *Views/Home/Index.cshtml*, replace the contents of the file with the following code to replace the text about ASP.NET and MVC with text about this application:
 
@@ -108,9 +109,9 @@ Press CTRL+F5 to run the project or choose **Debug > Start Without Debugging** f
 
 ## About EF Core NuGet packages
 
-To add EF Core support to a project, install the database provider that you want to target. This tutorial uses SQL Server, and the provider package is [Microsoft.EntityFrameworkCore.SqlServer](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.SqlServer/). This package is included in the [Microsoft.AspNetCore.App metapackage](xref:fundamentals/metapackage-app), so you don't need to reference the package if your app has a package reference for the `Microsoft.AspNetCore.App` package.
+To add EF Core support to a project, install the database provider that you want to target. This tutorial uses SQL Server, and the provider package is [Microsoft.EntityFrameworkCore.SqlServer](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.SqlServer/). This package is included in the [Microsoft.AspNetCore.App metapackage](xref:fundamentals/metapackage-app), so you don't need to reference the package.
 
-This package and its dependencies (`Microsoft.EntityFrameworkCore` and `Microsoft.EntityFrameworkCore.Relational`) provide runtime support for EF. You'll add a tooling package later, in the [Migrations](migrations.md) tutorial.
+The EF SQL Server package and its dependencies (`Microsoft.EntityFrameworkCore` and `Microsoft.EntityFrameworkCore.Relational`) provide runtime support for EF. You'll add a tooling package later, in the [Migrations](migrations.md) tutorial.
 
 For information about other database providers that are available for Entity Framework Core, see [Database providers](/ef/core/providers/).
 
@@ -192,7 +193,7 @@ ASP.NET Core implements [dependency injection](../../fundamentals/dependency-inj
 
 To register `SchoolContext` as a service, open *Startup.cs*, and add the highlighted lines to the `ConfigureServices` method.
 
-[!code-csharp[](intro/samples/cu/Startup.cs?name=snippet_SchoolContext&highlight=3-4)]
+[!code-csharp[](intro/samples/cu/Startup.cs?name=snippet_SchoolContext&highlight=9-10)]
 
 The name of the connection string is passed in to the context by calling a method on a `DbContextOptionsBuilder` object. For local development, the [ASP.NET Core configuration system](xref:fundamentals/configuration/index) reads the connection string from the *appsettings.json* file.
 
@@ -244,11 +245,6 @@ The automatic creation of CRUD action methods and views is known as scaffolding.
 
 * Right-click the **Controllers** folder in **Solution Explorer** and select **Add > New Scaffolded Item**.
 
-If the **Add MVC Dependencies** dialog appears:
-
-* [Update Visual Studio to the latest version](https://www.visualstudio.com/downloads/?utm_medium=microsoft&utm_source=docs.microsoft.com&utm_campaign=button+cta&utm_content=download+vs2017). Visual Studio versions prior to 15.5 show this dialog.
-* If you can't update, select **ADD**, and then follow the add controller steps again.
-
 * In the **Add Scaffold** dialog box:
 
   * Select **MVC controller with views, using Entity Framework**.
@@ -287,7 +283,7 @@ The *Views/Students/Index.cshtml* view displays this list in a table:
 
 Press CTRL+F5 to run the project or choose **Debug > Start Without Debugging** from the menu.
 
-Click the Students tab to see the test data that the `DbInitializer.Initialize` method inserted. Depending on how narrow your browser window is, you'll see the `Student` tab link at the top of the page or you'll have to click the navigation icon in the upper right corner to see the link.
+Click the Students tab to see the test data that the `DbInitializer.Initialize` method inserted. Depending on how narrow your browser window is, you'll see the `Students` tab link at the top of the page or you'll have to click the navigation icon in the upper right corner to see the link.
 
 ![Contoso University home page narrow](intro/_static/home-page-narrow.png)
 
@@ -361,7 +357,7 @@ For more information about asynchronous programming in .NET, see [Async Overview
 
 ## Get the code
 
-[Download or view the completed application.](https://github.com/aspnet/Docs/tree/master/aspnetcore/data/ef-mvc/intro/samples/cu-final)
+[Download or view the completed application.](https://github.com/dotnet/AspNetCore.Docs/tree/master/aspnetcore/data/ef-mvc/intro/samples/cu-final)
 
 ## Next steps
 
@@ -380,6 +376,8 @@ In this tutorial, you:
 
 In the following tutorial, you'll learn how to perform basic CRUD (create, read, update, delete) operations.
 
-Advance to the next article to learn how to perform basic CRUD (create, read, update, delete) operations.
+Advance to the next tutorial to learn how to perform basic CRUD (create, read, update, delete) operations.
+
 > [!div class="nextstepaction"]
 > [Implement basic CRUD functionality](crud.md)
+

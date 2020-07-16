@@ -2,13 +2,12 @@
 title: Migrate HTTP handlers and modules to ASP.NET Core middleware
 author: rick-anderson
 description: 
-ms.author: tdykstra
+ms.author: riande
 ms.date: 12/07/2016
+no-loc: [Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: migration/http-modules
 ---
 # Migrate HTTP handlers and modules to ASP.NET Core middleware
-
-By [Matt Perdeck](https://www.linkedin.com/in/mattperdeck)
 
 This article shows how to migrate existing ASP.NET [HTTP modules and handlers from system.webserver](/iis/configuration/system.webserver/) to ASP.NET Core [middleware](xref:fundamentals/middleware/index).
 
@@ -56,7 +55,16 @@ In addition to modules, you can add handlers for the life cycle events to your *
 
 * Middleware are configured using code rather than in *Web.config*
 
+::: moniker range=">= aspnetcore-3.0"
+
+* [Pipeline branching](xref:fundamentals/middleware/index#branch-the-middleware-pipeline) lets you send requests to specific middleware, based on not only the URL but also on request headers, query strings, etc.
+
+::: moniker-end
+::: moniker range="< aspnetcore-3.0"
+
 * [Pipeline branching](xref:fundamentals/middleware/index#use-run-and-map) lets you send requests to specific middleware, based on not only the URL but also on request headers, query strings, etc.
+
+::: moniker-end
 
 **Middleware are very similar to modules:**
 

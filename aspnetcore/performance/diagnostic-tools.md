@@ -4,7 +4,8 @@ author: mjrousos
 description: Useful tools for diagnosing performance issues in ASP.NET Core apps.
 monikerRange: '>= aspnetcore-1.1'
 ms.author: riande
-ms.date: 12/07/2018
+ms.date: 04/11/2019
+no-loc: [Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: performance/diagnostic-tools
 ---
 # Performance Diagnostic Tools
@@ -26,7 +27,7 @@ More information is available in [Visual Studio documentation](/visualstudio/pro
 Azure Application Insights provides multiple ways to give insights on monitored apps:
 
 - [Application Map](/azure/application-insights/app-insights-app-map) – helps spot performance bottlenecks or failure hot-spots across all components of distributed apps.
-- [Metrics blade in Application Insights portal](/azure/application-insights/app-insights-metrics-explorer?toc=/azure/azure-monitor/toc.json) shows measured values and event counts.
+- [Azure Metrics Explorer](/azure/azure-monitor/platform/metrics-getting-started) is a component of the Microsoft Azure portal that allows plotting charts, visually correlating trends, and investigating spikes and dips in metrics' values.
 - [Performance blade in Application Insights portal](/azure/application-insights/app-insights-tutorial-performance):
 
   - Shows performance details for different operations in the monitored app.
@@ -47,7 +48,7 @@ For more information, see [Application Insights for ASP.NET Core](/azure/applica
 
 [PerfView](https://github.com/Microsoft/perfview) is a performance analysis tool created by the .NET team specifically for diagnosing .NET performance issues. PerfView allows analysis of CPU usage, memory and GC behavior, performance events, and wall clock time.
 
-You can learn more about PerfView and how to get started with [PerfView video tutorials](http://channel9.msdn.com/Series/PerfView-Tutorial) or by reading the user's guide available in the tool or [on GitHub](https://github.com/Microsoft/perfview).
+You can learn more about PerfView and how to get started with [PerfView video tutorials](https://channel9.msdn.com/Series/PerfView-Tutorial) or by reading the user's guide available in the tool or [on GitHub](https://github.com/Microsoft/perfview).
 
 ## Windows Performance Toolkit
 

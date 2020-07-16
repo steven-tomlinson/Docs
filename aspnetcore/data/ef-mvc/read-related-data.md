@@ -2,9 +2,10 @@
 title: "Tutorial: Read related data - ASP.NET MVC with EF Core"
 description: "In this tutorial you'll read and display related data -- that is, data that the Entity Framework loads into navigation properties."
 author: rick-anderson
-ms.author: tdykstra
-ms.date: 02/05/2019
+ms.author: riande
+ms.date: 09/28/2019
 ms.topic: tutorial
+no-loc: [Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: data/ef-mvc/read-related-data
 ---
 
@@ -28,7 +29,7 @@ In this tutorial, you:
 
 ## Prerequisites
 
-* [Create a more complex data model with EF Core for an ASP.NET Core MVC web app](complex-data-model.md)
+* [Create a complex data model](complex-data-model.md)
 
 ## Learn how to load related data
 
@@ -70,7 +71,7 @@ Replace the `Index` method with the following code that uses a more appropriate 
 
 Open *Views/Courses/Index.cshtml* and replace the template code with the following code. The changes are highlighted:
 
-[!code-html[](intro/samples/cu/Views/Courses/Index.cshtml?highlight=4,7,15-17,34-36,44)]
+[!code-cshtml[](intro/samples/cu/Views/Courses/Index.cshtml?highlight=4,7,15-17,34-36,44)]
 
 You've made the following changes to the scaffolded code:
 
@@ -166,7 +167,7 @@ Next, if a course was selected, the selected course is retrieved from the list o
 
 In *Views/Instructors/Index.cshtml*, replace the template code with the following code. The changes are highlighted.
 
-[!code-html[](intro/samples/cu/Views/Instructors/Index1.cshtml?range=1-64&highlight=1,3-7,15-19,24,26-31,41-54,56)]
+[!code-cshtml[](intro/samples/cu/Views/Instructors/Index1.cshtml?range=1-64&highlight=1,3-7,15-19,24,26-31,41-54,56)]
 
 You've made the following changes to the existing code:
 
@@ -183,7 +184,7 @@ You've made the following changes to the existing code:
   }
   ```
 
-* Added a **Courses** column that displays courses taught by each instructor. See [Explicit Line Transition with `@:`](xref:mvc/views/razor#explicit-line-transition-with-) for more about this razor syntax.
+* Added a **Courses** column that displays courses taught by each instructor. For more information, see the [Explicit line transition](xref:mvc/views/razor#explicit-line-transition) section of the Razor syntax article.
 
 * Added code that dynamically adds `class="success"` to the `tr` element of the selected instructor. This sets a background color for the selected row using a Bootstrap class.
 
@@ -208,7 +209,7 @@ Run the app and select the **Instructors** tab. The page displays the Location p
 
 In the *Views/Instructors/Index.cshtml* file, after the closing table element (at the end of the file), add the following code. This code displays a list of courses related to an instructor when an instructor is selected.
 
-[!code-html[](intro/samples/cu/Views/Instructors/Index1.cshtml?range=66-101)]
+[!code-cshtml[](intro/samples/cu/Views/Instructors/Index1.cshtml?range=66-101)]
 
 This code reads the `Courses` property of the view model to display a list of courses. It also provides a **Select** hyperlink that sends the ID of the selected course to the `Index` action method.
 
@@ -218,7 +219,7 @@ Refresh the page and select an instructor. Now you see a grid that displays cour
 
 After the code block you just added, add the following code. This displays a list of the students who are enrolled in a course when that course is selected.
 
-[!code-html[](intro/samples/cu/Views/Instructors/Index1.cshtml?range=103-125)]
+[!code-cshtml[](intro/samples/cu/Views/Instructors/Index1.cshtml?range=103-125)]
 
 This code reads the Enrollments property of the view model in order to display a list of students enrolled in the course.
 
@@ -234,13 +235,13 @@ Suppose you expected users to only rarely want to see enrollments in a selected 
 
 [!code-csharp[](intro/samples/cu/Controllers/InstructorsController.cs?name=snippet_ExplicitLoading&highlight=23-29)]
 
-The new code drops the *ThenInclude* method calls for enrollment data from the code that retrieves instructor entities. If an instructor and course are selected, the highlighted code retrieves Enrollment entities for the selected course, and Student entities for each Enrollment.
+The new code drops the *ThenInclude* method calls for enrollment data from the code that retrieves instructor entities. It also drops `AsNoTracking`.  If an instructor and course are selected, the highlighted code retrieves Enrollment entities for the selected course, and Student entities for each Enrollment.
 
 Run the app, go to the Instructors Index page now and you'll see no difference in what's displayed on the page, although you've changed how the data is retrieved.
 
 ## Get the code
 
-[Download or view the completed application.](https://github.com/aspnet/Docs/tree/master/aspnetcore/data/ef-mvc/intro/samples/cu-final)
+[Download or view the completed application.](https://github.com/dotnet/AspNetCore.Docs/tree/master/aspnetcore/data/ef-mvc/intro/samples/cu-final)
 
 ## Next steps
 
@@ -252,6 +253,7 @@ In this tutorial, you:
 > * Created an Instructors page
 > * Learned about explicit loading
 
-Advance to the next article to learn how to update related data.
+Advance to the next tutorial to learn how to update related data.
+
 > [!div class="nextstepaction"]
 > [Update related data](update-related-data.md)

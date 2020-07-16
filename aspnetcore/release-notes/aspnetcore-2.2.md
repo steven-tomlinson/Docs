@@ -1,29 +1,30 @@
 ---
 title: What's new in ASP.NET Core 2.2
-author: tdykstra
+author: rick-anderson
 description: Learn about the new features in ASP.NET Core 2.2.
-ms.author: tdykstra
+ms.author: riande
 ms.custom: mvc
-ms.date: 12/18/2018
+ms.date: 12/05/2019
+no-loc: [Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: aspnetcore-2.2
 ---
 # What's new in ASP.NET Core 2.2
 
 This article highlights the most significant changes in ASP.NET Core 2.2, with links to relevant documentation.
 
-## Open API Analyzers & Conventions
+## OpenAPI Analyzers & Conventions
 
-Open API (also known as Swagger) is a language-agnostic specification for describing REST APIs. The Open API ecosystem has tools that allow for discovering, testing, and producing client code using the specification. Support for generating and visualizing Open API documents in ASP.NET Core MVC is provided via community driven projects such as [NSwag](https://github.com/RSuter/NSwag), and [Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore). ASP.NET Core 2.2 provides improved tooling and runtime experiences for creating Open API documents.
+OpenAPI (formerly known as Swagger) is a language-agnostic specification for describing REST APIs. The OpenAPI ecosystem has tools that allow for discovering, testing, and producing client code using the specification. Support for generating and visualizing OpenAPI documents in ASP.NET Core MVC is provided via community driven projects such as [NSwag](https://github.com/RicoSuter/NSwag) and [Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore). ASP.NET Core 2.2 provides improved tooling and runtime experiences for creating OpenAPI documents.
 
 For more information, see the following resources:
 
 * <xref:web-api/advanced/analyzers>
 * <xref:web-api/advanced/conventions>
-* [ASP.NET Core 2.2.0-preview1: Open API Analyzers & Conventions](https://blogs.msdn.microsoft.com/webdev/2018/08/23/asp-net-core-2-20-preview1-open-api-analyzers-conventions/)
+* [ASP.NET Core 2.2.0-preview1: OpenAPI Analyzers & Conventions](https://blogs.msdn.microsoft.com/webdev/2018/08/23/asp-net-core-2-20-preview1-open-api-analyzers-conventions/)
 
 ## Problem details support
 
-ASP.NET Core 2.1 introduced `ProblemDetails`, based on the [RFC 7807](https://tools.ietf.org/html/rfc7807) specification for carrying details of an error with an HTTP Response. In 2.2, `ProblemDetails` is the standard response for client error codes in controllers attributed with `ApiControllerAttribute`. An `IActionResult` returning a client error status code (4xx) now returns a `ProblemDetails` body. The result also includes a correlation ID that can be used to correlate the error using request logs. For client errors, `ProducesResponseType` defaults to using `ProblemDetails` as the response type. This is documented in Open API / Swagger output generated using NSwag or Swashbuckle.AspNetCore.
+ASP.NET Core 2.1 introduced `ProblemDetails`, based on the [RFC 7807](https://tools.ietf.org/html/rfc7807) specification for carrying details of an error with an HTTP Response. In 2.2, `ProblemDetails` is the standard response for client error codes in controllers attributed with `ApiControllerAttribute`. An `IActionResult` returning a client error status code (4xx) now returns a `ProblemDetails` body. The result also includes a correlation ID that can be used to correlate the error using request logs. For client errors, `ProducesResponseType` defaults to using `ProblemDetails` as the response type. This is documented in OpenAPI / Swagger output generated using NSwag or Swashbuckle.AspNetCore.
 
 ## Endpoint Routing
 
@@ -47,9 +48,14 @@ For more information, see [Health checks in ASP.NET Core](xref:host-and-deploy/h
 
 ## HTTP/2 in Kestrel
 
-ASP.NET Core 2.2 adds support for HTTP/2. 
+ASP.NET Core 2.2 adds support for HTTP/2.
 
-HTTP/2 is a major revision of the HTTP protocol. Some of the notable features of HTTP/2 are support for header compression and fully multiplexed streams over a single connection. While HTTP/2 preserves HTTP’s semantics (HTTP headers, methods, etc) it's a breaking change from HTTP/1.x on how this data is framed and sent over the wire.
+HTTP/2 is a major revision of the HTTP protocol. Notable features of HTTP/2 include:
+
+* Support for header compression.
+* Fully multiplexed streams over a single connection.
+
+While HTTP/2 preserves HTTP's semantics (for example, HTTP headers and methods), it's a breaking change from HTTP/1.x on how data is framed and sent between the client and server.
 
 As a consequence of this change in framing, servers and clients need to negotiate the protocol version used. Application-Layer Protocol Negotiation (ALPN) is a TLS extension that allows the server and client to negotiate the protocol version used as part of their TLS handshake. While it is possible to have prior knowledge between the server and the client on the protocol, all major browsers support ALPN as the only way to establish an HTTP/2 connection.
 
@@ -94,7 +100,7 @@ ASP.NET Core web project templates were updated to [Bootstrap 4](https://getboot
 
 ## Validation performance
 
-MVC’s validation system is designed to be extensible and flexible, allowing you to determine on a per request basis which validators apply to a given model. This is great for authoring complex validation providers. However, in the most common case an application only uses the built-in validators and don’t require this extra flexibility. Built-in validators include DataAnnotations such as [Required] and [StringLength], and `IValidatableObject`.
+MVC's validation system is designed to be extensible and flexible, allowing you to determine on a per request basis which validators apply to a given model. This is great for authoring complex validation providers. However, in the most common case an application only uses the built-in validators and don't require this extra flexibility. Built-in validators include DataAnnotations such as [Required] and [StringLength], and `IValidatableObject`.
 
 In ASP.NET Core 2.2, MVC can short-circuit validation if it determines that a given model graph doesn't require validation. Skipping validation results in significant improvements when validating models that can't or don't have any validators. This includes objects such as collections of primitives (such as `byte[]`, `string[]`, `Dictionary<string, string>`), or complex object graphs without many validators.
 
@@ -106,4 +112,4 @@ For more information, see [the pull request that made this improvement](https://
 
 ## Additional information
 
-For the complete list of changes, see the [ASP.NET Core 2.2 Release Notes](https://github.com/aspnet/Home/releases/tag/2.2.0).
+For the complete list of changes, see the [ASP.NET Core 2.2 Release Notes](https://github.com/dotnet/aspnetcore/releases/tag/2.2.0).

@@ -12,8 +12,6 @@ public class Program
         WebHost.CreateDefaultBuilder(args)
             .ConfigureAppConfiguration((hostingContext, config) =>
             {
-                HostingEnvironment = hostingContext.HostingEnvironment;
-                Configuration = config.Build();
             })
             .ConfigureServices(services =>
             {
@@ -24,10 +22,12 @@ public class Program
                 var loggerFactory = app.ApplicationServices
                     .GetRequiredService<ILoggerFactory>();
                 var logger = loggerFactory.CreateLogger<Program>();
+                var env = app.ApplicationServices.GetRequiredService<IHostingEnvironment>();
+                var config = app.ApplicationServices.GetRequiredService<IConfiguration>();
 
                 logger.LogInformation("Logged in Configure");
 
-                if (HostingEnvironment.IsDevelopment())
+                if (env.IsDevelopment())
                 {
                     ...
                 }
@@ -36,7 +36,7 @@ public class Program
                     ...
                 }
 
-                var configValue = Configuration["subsection:suboption1"];
+                var configValue = config["subsection:suboption1"];
 
                 ...
             });

@@ -1,13 +1,14 @@
 ---
-title: Add a new field to an ASP.NET Core MVC app
+title: Part 8, add a new field to an ASP.NET Core MVC app
 author: rick-anderson
-description: Learn how to use Entity Framework Code First Migrations to add a new field to a model and migrate that change to a database.
+description: Part 8 of tutorial series on ASP.NET Core MVC.
 ms.author: riande
 ms.custom: mvc
 ms.date: 12/13/2018
+no-loc: [Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: tutorials/first-mvc-app/new-field
 ---
-# Add a new field to an ASP.NET Core MVC app
+# Part 8, add a new field to an ASP.NET Core MVC app
 
 By [Rick Anderson](https://twitter.com/RickAndMSFT)
 
@@ -19,7 +20,7 @@ In this section [Entity Framework](/ef/core/get-started/aspnetcore/new-db) Code 
 When EF Code First is used to automatically create a database, Code First:
 
 * Adds a table to the database to  track the schema of the database.
-* Verify the database is in sync with the model classes it was generated from. If they aren't in sync, EF throws an exception. This makes it easier to find inconsistent database/code issues.
+* Verifies the database is in sync with the model classes it was generated from. If they aren't in sync, EF throws an exception. This makes it easier to find inconsistent database/code issues.
 
 ## Add a Rating Property to the Movie Model
 
@@ -27,19 +28,35 @@ Add a `Rating` property to *Models/Movie.cs*:
 
 [!code-csharp[](~/tutorials/first-mvc-app/start-mvc/sample/MvcMovie22/Models/MovieDateRating.cs?highlight=13&name=snippet)]
 
-Build the app (Ctrl+Shift+B).
+Build the app
+
+### [Visual Studio](#tab/visual-studio)
+
+ Ctrl+Shift+B
+
+### [Visual Studio Code](#tab/visual-studio-code)
+
+```dotnetcli
+dotnet build
+```
+
+### [Visual Studio for Mac](#tab/visual-studio-mac)
+
+Command ⌘ + B
+
+------
 
 Because you've added a new field to the `Movie` class, you need to update the binding white list so this new property will be included. In *MoviesController.cs*, update the `[Bind]` attribute for both the `Create` and `Edit` action methods to include the `Rating` property:
 
 ```csharp
-[Bind("ID,Title,ReleaseDate,Genre,Price,Rating")]
+[Bind("Id,Title,ReleaseDate,Genre,Price,Rating")]
    ```
 
 Update the view templates in order to display, create, and edit the new `Rating` property in the browser view.
 
 Edit the */Views/Movies/Index.cshtml* file and add a `Rating` field:
 
-[!code-HTML[](~/tutorials/first-mvc-app/start-mvc/sample/MvcMovie22/Views/Movies/IndexGenreRating.cshtml?highlight=16,38&range=24-64)]
+[!code-cshtml[](~/tutorials/first-mvc-app/start-mvc/sample/MvcMovie22/Views/Movies/IndexGenreRating.cshtml?highlight=16,38&range=24-64)]
 
 Update the */Views/Movies/Create.cshtml* with a `Rating` field.
 
@@ -54,6 +71,8 @@ You can copy/paste the previous "form group" and let intelliSense help you updat
 <!-- This tab intentionally left blank. -->
 
 ---
+
+Update the remaining templates.
 
 Update the `SeedData` class so that it provides a value for the new column. A sample change is shown below, but you'll want to make this change for each `new Movie`.
 
@@ -100,14 +119,14 @@ If all the records in the DB are deleted, the initialize method will seed the DB
 
 Delete the database and use migrations to re-create the database. To delete the database, delete the database file (*MvcMovie.db*). Then run the `ef database update` command:
 
-```console
+```dotnetcli
 dotnet ef database update
 ```
 
 ---
 <!-- End of VS tabs -->
 
-Run the app and verify you can create/edit/display movies with a `Rating` field. You should add the `Rating` field to the `Edit`, `Details`, and `Delete` view templates.
+Run the app and verify you can create, edit, and display movies with a `Rating` field.
 
 > [!div class="step-by-step"]
 > [Previous](search.md)

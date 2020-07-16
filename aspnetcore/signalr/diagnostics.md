@@ -5,7 +5,8 @@ description: Learn how to gather diagnostics from your ASP.NET Core SignalR app.
 monikerRange: '>= aspnetcore-2.1'
 ms.author: anurse
 ms.custom: signalr
-ms.date: 02/27/2019
+ms.date: 06/12/2020
+no-loc: [Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: signalr/diagnostics
 ---
 # Logging and diagnostics in ASP.NET Core SignalR
@@ -23,23 +24,23 @@ Since SignalR is part of ASP.NET Core, it uses the ASP.NET Core logging system. 
 
 SignalR uses two logger categories:
 
-* `Microsoft.AspNetCore.SignalR` - for logs related to Hub Protocols, activating Hubs, invoking methods, and other Hub-related activities.
-* `Microsoft.AspNetCore.Http.Connections` - for logs related to transports such as WebSockets, Long Polling and Server-Sent Events and low-level SignalR infrastructure.
+* `Microsoft.AspNetCore.SignalR`: For logs related to Hub Protocols, activating Hubs, invoking methods, and other Hub-related activities.
+* `Microsoft.AspNetCore.Http.Connections`: For logs related to transports, such as WebSockets, Long Polling, Server-Sent Events, and low-level SignalR infrastructure.
 
-To enable detailed logs from SignalR, configure both of the preceding prefixes to the `Debug` level in your `appsettings.json` file by adding the following items to the `LogLevel` sub-section in `Logging`:
+To enable detailed logs from SignalR, configure both of the preceding prefixes to the `Debug` level in your *appsettings.json* file by adding the following items to the `LogLevel` sub-section in `Logging`:
 
-[!code-json[Configuring logging](diagnostics/logging-config.json?highlight=7-8)]
+[!code-json[](diagnostics/logging-config.json?highlight=7-8)]
 
 You can also configure this in code in your `CreateWebHostBuilder` method:
 
-[!code-csharp[Configuring logging in code](diagnostics/logging-config-code.cs?highlight=5-6)]
+[!code-csharp[](diagnostics/logging-config-code.cs?highlight=5-6)]
 
 If you aren't using JSON-based configuration, set the following configuration values in your configuration system:
 
 * `Logging:LogLevel:Microsoft.AspNetCore.SignalR` = `Debug`
 * `Logging:LogLevel:Microsoft.AspNetCore.Http.Connections` = `Debug`
 
-Check the documentation for your configuration system to determine how to specify nested configuration values. For example, when using environment variables, two `_` characters are used instead of the `:` (such as: `Logging__LogLevel__Microsoft.AspNetCore.SignalR`).
+Check the documentation for your configuration system to determine how to specify nested configuration values. For example, when using environment variables, two `_` characters are used instead of the `:` (for example, `Logging__LogLevel__Microsoft.AspNetCore.SignalR`).
 
 We recommend using the `Debug` level when gathering more detailed diagnostics for your app. The `Trace` level produces very low-level diagnostics and is rarely needed to diagnose issues in your app.
 
@@ -49,7 +50,7 @@ How you access server-side logs depends on the environment in which you're runni
 
 ### As a console app outside IIS
 
-If you're running in a console app, the [Console logger](xref:fundamentals/logging/index#console-provider) should be enabled by default. SignalR logs will appear in the console.
+If you're running in a console app, the [Console logger](xref:fundamentals/logging/index#console) should be enabled by default. SignalR logs will appear in the console.
 
 ### Within IIS Express from Visual Studio
 
@@ -57,11 +58,11 @@ Visual Studio displays the log output in the **Output** window. Select the **ASP
 
 ### Azure App Service
 
-Enable the "Application Logging (Filesystem)" option in the "Diagnostics logs" section of the Azure App Service portal and configure the Level to `Verbose`. Logs should be available from the "Log streaming" service, as well as in logs on the file system of your App Service. For more information, see the documentation on [Azure log streaming](xref:fundamentals/logging/index#azure-log-streaming).
+Enable the **Application Logging (Filesystem)** option in the **Diagnostics logs** section of the Azure App Service portal and configure the **Level** to `Verbose`. Logs should be available from the **Log streaming** service and in logs on the file system of the App Service. For more information, see [Azure log streaming](xref:fundamentals/logging/index#azure-log-streaming).
 
 ### Other environments
 
-If you're running in another environment (Docker, Kubernetes, Windows Service, etc.), see the full documentation on [ASP.NET Core Logging](xref:fundamentals/logging/index) for more information on how to configure logging providers suitable to your environment.
+If the app is deployed to another environment (for example, Docker, Kubernetes, or Windows Service), see <xref:fundamentals/logging/index> for more information on how to configure logging providers suitable for the environment.
 
 ## JavaScript client logging
 
@@ -70,7 +71,7 @@ If you're running in another environment (Docker, Kubernetes, Windows Service, e
 
 When using the JavaScript client, you can configure logging options using the `configureLogging` method on `HubConnectionBuilder`:
 
-[!code-javascript[Configuring logging in the JavaScript client](diagnostics/logging-config-js.js?highlight=3)]
+[!code-javascript[](diagnostics/logging-config-js.js?highlight=3)]
 
 To disable logging entirely, specify `signalR.LogLevel.None` in the `configureLogging` method.
 
@@ -90,7 +91,7 @@ Once you've configured the verbosity, the logs will be written to the Browser Co
 
 If you want to send logs to a custom logging system, you can provide a JavaScript object implementing the `ILogger` interface. The only method that needs to be implemented is `log`, which takes the level of the event and the message associated with the event. For example:
 
-[!code-typescript[Creating a custom logger](diagnostics/custom-logger.ts?highlight=3-7,13)]
+[!code-typescript[](diagnostics/custom-logger.ts?highlight=3-7,13)]
 
 ## .NET client logging
 
@@ -99,23 +100,25 @@ If you want to send logs to a custom logging system, you can provide a JavaScrip
 
 To get logs from the .NET client, you can use the `ConfigureLogging` method on `HubConnectionBuilder`. This works the same way as the `ConfigureLogging` method on `WebHostBuilder` and `HostBuilder`. You can configure the same logging providers you use in ASP.NET Core. However, you have to manually install and enable the NuGet packages for the individual logging providers.
 
+To add .NET client logging to a Blazor WebAssembly app, see <xref:blazor/fundamentals/logging#blazor-webassembly-signalr-net-client-logging>.
+
 ### Console logging
 
 In order to enable Console logging, add the [Microsoft.Extensions.Logging.Console](https://www.nuget.org/packages/Microsoft.Extensions.Logging.Console) package. Then, use the `AddConsole` method to configure the console logger:
 
-[!code-csharp[Configuring console logging in .NET client](diagnostics/net-client-console-log.cs?highlight=6)]
+[!code-csharp[](diagnostics/net-client-console-log.cs?highlight=6)]
 
 ### Debug output window logging
 
 You can also configure logs to go to the **Output** window in Visual Studio. Install the [Microsoft.Extensions.Logging.Debug](https://www.nuget.org/packages/Microsoft.Extensions.Logging.Debug) package and use the `AddDebug` method:
 
-[!code-csharp[Configuring debug output window logging in .NET client](diagnostics/net-client-debug-log.cs?highlight=6)]
+[!code-csharp[](diagnostics/net-client-debug-log.cs?highlight=6)]
 
 ### Other logging providers
 
 SignalR supports other logging providers such as Serilog, Seq, NLog, or any other logging system that integrates with `Microsoft.Extensions.Logging`. If your logging system provides an `ILoggerProvider`, you can register it with `AddProvider`:
 
-[!code-csharp[Configuring a custom logging provider in .NET client](diagnostics/net-client-custom-log.cs?highlight=6)]
+[!code-csharp[](diagnostics/net-client-custom-log.cs?highlight=6)]
 
 ### Control verbosity
 
@@ -138,7 +141,7 @@ Fiddler is a very powerful tool for collecting HTTP traces. Install it from [tel
 
 If you connect using HTTPS, there are some extra steps to ensure Fiddler can decrypt the HTTPS traffic. For more details, see the [Fiddler documentation](https://docs.telerik.com/fiddler/Configure-Fiddler/Tasks/DecryptHTTPS).
 
-Once you've collected the trace, you can export the trace by choosing **File** > **Save** > **All Sessions...** from the menu bar.
+Once you've collected the trace, you can export the trace by choosing **File** > **Save** > **All Sessions** from the menu bar.
 
 ![Exporting all sessions from Fiddler](diagnostics/fiddler-export.png)
 
@@ -194,9 +197,42 @@ Most browser Developer Tools have a "Network" tab that allows you to capture net
 You can attach Diagnostics files to GitHub issues by renaming them so they have a `.txt` extension and then dragging and dropping them on to the issue.
 
 > [!NOTE]
-> Please don't paste the content of log files or network traces in GitHub issue. These logs and traces can be quite large and GitHub will usually truncate them.
+> Please don't paste the content of log files or network traces into a GitHub issue. These logs and traces can be quite large, and GitHub usually truncates them.
 
 ![Dragging log files on to a GitHub issue](diagnostics/attaching-diagnostics-files.png)
+
+## Metrics
+
+Metrics is a representation of data measures over intervals of time. For example, requests per second. Metrics data allows observation of the state of an app at a high level. .NET gRPC metrics are emitted using <xref:System.Diagnostics.Tracing.EventCounter>.
+
+### SignalR server metrics
+
+SignalR server metrics are reported on the <xref:Microsoft.AspNetCore.Http.Connections> event source.
+
+| Name                    | Description                 |
+|-------------------------|-----------------------------|
+| `connections-started`   | Total connections started   |
+| `connections-stopped`   | Total connections stopped   |
+| `connections-timed-out` | Total connections timed out |
+| `current-connections`   | Current connections         |
+| `connections-duration`  | Average connection duration |
+
+### Observe metrics
+
+[dotnet-counters](/dotnet/core/diagnostics/dotnet-counters) is a performance monitoring tool for ad-hoc health monitoring and first-level performance investigation. Monitor a .NET app with `Microsoft.AspNetCore.Http.Connections` as the provider name. For example:
+
+```console
+> dotnet-counters monitor --process-id 37016 Microsoft.AspNetCore.Http.Connections
+
+Press p to pause, r to resume, q to quit.
+    Status: Running
+[Microsoft.AspNetCore.Http.Connections]
+    Average Connection Duration (ms)       16,040.56
+    Current Connections                         1
+    Total Connections Started                   8
+    Total Connections Stopped                   7
+    Total Connections Timed Out                 0
+```
 
 ## Additional resources
 

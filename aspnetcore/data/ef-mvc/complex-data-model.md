@@ -2,10 +2,11 @@
 title: "Tutorial: Create a complex data model - ASP.NET MVC with EF Core"
 description: "In this tutorial, add more entities and relationships and customize the data model by specifying formatting, validation, and mapping rules."
 author: rick-anderson
-ms.author: tdykstra
+ms.author: riande
 ms.custom: mvc
-ms.date: 02/05/2019
+ms.date: 03/27/2019
 ms.topic: tutorial
+no-loc: [Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: data/ef-mvc/complex-data-model
 ---
 
@@ -35,7 +36,7 @@ In this tutorial, you:
 
 ## Prerequisites
 
-* [Using the EF Core migrations feature for ASP.NET Core in an MVC web app](migrations.md)
+* [Using EF Core migrations](migrations.md)
 
 ## Customize the Data model
 
@@ -84,7 +85,7 @@ Suppose you want to ensure that users don't enter more than 50 characters for a 
 The `StringLength` attribute won't prevent a user from entering white space for a name. You can use the `RegularExpression` attribute to apply restrictions to the input. For example, the following code requires the first character to be upper case and the remaining characters to be alphabetical:
 
 ```csharp
-[RegularExpression(@"^[A-Z]+[a-zA-Z""'\s-]*$")]
+[RegularExpression(@"^[A-Z]+[a-zA-Z]*$")]
 ```
 
 The `MaxLength` attribute provides functionality similar to the `StringLength` attribute but doesn't provide client side validation.
@@ -93,11 +94,11 @@ The database model has now changed in a way that requires a change in the databa
 
 Save your changes and build the project. Then open the command window in the project folder and enter the following commands:
 
-```console
+```dotnetcli
 dotnet ef migrations add MaxLengthOnNames
 ```
 
-```console
+```dotnetcli
 dotnet ef database update
 ```
 
@@ -121,11 +122,11 @@ The addition of the `Column` attribute changes the model backing the `SchoolCont
 
 Save your changes and build the project. Then open the command window in the project folder and enter the following commands to create another migration:
 
-```console
+```dotnetcli
 dotnet ef migrations add ColumnFirstName
 ```
 
-```console
+```dotnetcli
 dotnet ef database update
 ```
 
@@ -150,11 +151,12 @@ In *Models/Student.cs*, replace the code you added earlier with the following co
 
 The `Required` attribute makes the name properties required fields. The `Required` attribute isn't needed for non-nullable types such as value types (DateTime, int, double, float, etc.). Types that can't be null are automatically treated as required fields.
 
-You could remove the `Required` attribute and replace it with a minimum length parameter for the `StringLength` attribute:
+The `Required` attribute must be used with `MinimumLength` for the `MinimumLength` to be enforced.
 
 ```csharp
 [Display(Name = "Last Name")]
-[StringLength(50, MinimumLength=1)]
+[Required]
+[StringLength(50, MinimumLength=2)]
 public string LastName { get; set; }
 ```
 
@@ -315,7 +317,7 @@ public ICollection<Course> Courses { get; set; }
 ```
 
 > [!NOTE]
-> By convention, the Entity Framework enables cascade delete for non-nullable foreign keys and for many-to-many relationships. This can result in circular cascade delete rules, which will cause an exception when you try to add a migration. For example, if you didn't define the Department.InstructorID property as nullable, EF would configure a cascade delete rule to delete the instructor when you delete the department, which isn't what you want to have happen. If your business rules required the `InstructorID` property to be non-nullable, you would have to use the following fluent API statement to disable cascade delete on the relationship:
+> By convention, the Entity Framework enables cascade delete for non-nullable foreign keys and for many-to-many relationships. This can result in circular cascade delete rules, which will cause an exception when you try to add a migration. For example, if you didn't define the Department.InstructorID property as nullable, EF would configure a cascade delete rule to delete the department when you delete the instructor, which isn't what you want to have happen. If your business rules required the `InstructorID` property to be non-nullable, you would have to use the following fluent API statement to disable cascade delete on the relationship:
 >
 > ```csharp
 > modelBuilder.Entity<Department>()
@@ -392,7 +394,7 @@ This code adds the new entities and configures the CourseAssignment entity's com
 
 ## About a fluent API alternative
 
-The code in the `OnModelCreating` method of the `DbContext` class uses the *fluent API* to configure EF behavior. The API is called "fluent" because it's often used by stringing a series of method calls together into a single statement, as in this example from the [EF Core documentation](/ef/core/modeling/#methods-of-configuration):
+The code in the `OnModelCreating` method of the `DbContext` class uses the *fluent API* to configure EF behavior. The API is called "fluent" because it's often used by stringing a series of method calls together into a single statement, as in this example from the [EF Core documentation](/ef/core/modeling/#use-fluent-api-to-configure-a-model):
 
 ```csharp
 protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -407,7 +409,7 @@ In this tutorial, you're using the fluent API only for database mapping that you
 
 Some developers prefer to use the fluent API exclusively so that they can keep their entity classes "clean." You can mix attributes and fluent API if you want, and there are a few customizations that can only be done by using fluent API, but in general the recommended practice is to choose one of these two approaches and use that consistently as much as possible. If you do use both, note that wherever there's a conflict, Fluent API overrides attributes.
 
-For more information about attributes vs. fluent API, see [Methods of configuration](/ef/core/modeling/#methods-of-configuration).
+For more information about attributes vs. fluent API, see [Methods of configuration](/ef/core/modeling/).
 
 ## Entity Diagram Showing Relationships
 
@@ -429,7 +431,7 @@ As you saw in the first tutorial, most of this code simply creates new entity ob
 
 Save your changes and build the project. Then open the command window in the project folder and enter the `migrations add` command (don't do the update-database command yet):
 
-```console
+```dotnetcli
 dotnet ef migrations add ComplexDataModel
 ```
 
@@ -478,7 +480,7 @@ Save your change to *appsettings.json*.
 > [!NOTE]
 > As an alternative to changing the database name, you can delete the database. Use **SQL Server Object Explorer** (SSOX) or the `database drop` CLI command:
 >
-> ```console
+> ```dotnetcli
 > dotnet ef database drop
 > ```
 
@@ -486,7 +488,7 @@ Save your change to *appsettings.json*.
 
 After you have changed the database name or deleted the database, run the `database update` command in the command window to execute the migrations.
 
-```console
+```dotnetcli
 dotnet ef database update
 ```
 
@@ -504,7 +506,7 @@ Right-click the **CourseAssignment** table and select **View Data** to verify th
 
 ## Get the code
 
-[Download or view the completed application.](https://github.com/aspnet/Docs/tree/master/aspnetcore/data/ef-mvc/intro/samples/cu-final)
+[Download or view the completed application.](https://github.com/dotnet/AspNetCore.Docs/tree/master/aspnetcore/data/ef-mvc/intro/samples/cu-final)
 
 ## Next steps
 
@@ -524,6 +526,7 @@ In this tutorial, you:
 > * Changed the connection string
 > * Updated the database
 
-Advance to the next article to learn more about how to access related data.
+Advance to the next tutorial to learn more about how to access related data.
+
 > [!div class="nextstepaction"]
-> [Access related data](read-related-data.md)
+> [Next: Access related data](read-related-data.md)

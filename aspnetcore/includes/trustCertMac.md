@@ -1,11 +1,15 @@
-Visual Studio for Mac displays a dialog with the following message:
+Visual Studio for Mac displays the following popup:
 
-*This project is configured to use SSL. To avoid SSL warnings in the browser you can choose to trust the self-signed certificate. Would you like to trust the IIS Express SSL certificate?*
+![HTTPS Development certificate not found. Do you want to install and trust the certificate?](~/getting-started/_static/trustCertMac.png)
 
-Select **Yes** and the following dialog is displayed:
+Select **Yes** if you trust the development certificate.
 
-![Security warning dialog](~/getting-started/_static/cert.png)
+The following dialog is displayed:
+
+![Security warning dialog](~/getting-started/_static/certMac.png)
+
+Enter your password and select **OK**
 
 Select **Yes** if you agree to trust the development certificate.
 
-See [Trust the ASP.NET Core HTTPS development certificate](xref:security/enforcing-ssl#trust-the-aspnet-core-https-development-certificate-on-windows-and-macos) for more information.
+See [Trust the ASP.NET Core HTTPS development certificate](xref:security/enforcing-ssl#trust-the-aspnet-core-https-development-certificate-on-windows-and-macos) for more information

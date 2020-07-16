@@ -1,19 +1,20 @@
 ---
-title: Add search to an ASP.NET Core MVC app
+title: Part 7, add search to an ASP.NET Core MVC app
 author: rick-anderson
-description: Shows how to add search to a basic ASP.NET Core MVC app
+description: Part 7 of tutorial series on ASP.NET Core MVC.
 ms.author: riande
 ms.date: 12/13/2018
+no-loc: [Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: tutorials/first-mvc-app/search
 ---
 
-# Add search to an ASP.NET Core MVC app
+# Part 7, add search to an ASP.NET Core MVC app
 
 By [Rick Anderson](https://twitter.com/RickAndMSFT)
 
 In this section, you add search capability to the `Index` action method that lets you search movies by *genre* or *name*.
 
-Update the `Index` method with the following code:
+Update the `Index` method found inside *Controllers/MoviesController.cs* with the following code:
 
 [!code-csharp[](~/tutorials/first-mvc-app/start-mvc/sample/MvcMovie/Controllers/MoviesController.cs?name=snippet_1stSearch)]
 
@@ -62,7 +63,7 @@ However, you can't expect users to modify the URL every time they want to search
 
 Open the *Views/Movies/Index.cshtml* file, and add the `<form>` markup highlighted below:
 
-[!code-HTML[](~/tutorials/first-mvc-app/start-mvc/sample/MvcMovie/Views/Movies/IndexForm1.cshtml?highlight=10-16&range=4-21)]
+[!code-cshtml[](~/tutorials/first-mvc-app/start-mvc/sample/MvcMovie/Views/Movies/IndexForm1.cshtml?highlight=10-16&range=4-21)]
 
 The HTML `<form>` tag uses the [Form Tag Helper](xref:mvc/views/working-with-forms), so when you submit the form, the filter string is posted to the `Index` action of the movies controller. Save your changes and then test the filter.
 
@@ -80,15 +81,15 @@ If you add this method, the action invoker would match the `[HttpPost] Index` me
 
 ![Browser window with application response of From HttpPost Index: filter on ghost](~/tutorials/first-mvc-app/search/_static/fo.png)
 
-However, even if you add this `[HttpPost]` version of the `Index` method, there's a limitation in how this has all been implemented. Imagine that you want to bookmark a particular search or you want to send a link to friends that they can click in order to see the same filtered list of movies. Notice that the URL for the HTTP POST request is the same as the URL for the GET request (localhost:xxxxx/Movies/Index) -- there's no search information in the URL. The search string information is sent to the server as a [form field value](https://developer.mozilla.org/docs/Learn/HTML/Forms/Sending_and_retrieving_form_data). You can verify that with the browser Developer tools or the excellent [Fiddler tool](http://www.telerik.com/fiddler). The image below shows the Chrome browser Developer tools:
+However, even if you add this `[HttpPost]` version of the `Index` method, there's a limitation in how this has all been implemented. Imagine that you want to bookmark a particular search or you want to send a link to friends that they can click in order to see the same filtered list of movies. Notice that the URL for the HTTP POST request is the same as the URL for the GET request (localhost:{PORT}/Movies/Index) -- there's no search information in the URL. The search string information is sent to the server as a [form field value](https://developer.mozilla.org/docs/Learn/HTML/Forms/Sending_and_retrieving_form_data). You can verify that with the browser Developer tools or the excellent [Fiddler tool](https://www.telerik.com/fiddler). The image below shows the Chrome browser Developer tools:
 
 ![Network tab of Developer Tools in Microsoft Edge showing a request body with a searchString value of ghost](~/tutorials/first-mvc-app/search/_static/f12_rb.png)
 
 You can see the search parameter and [XSRF](xref:security/anti-request-forgery) token in the request body. Note, as mentioned in the previous tutorial, the [Form Tag Helper](xref:mvc/views/working-with-forms) generates an [XSRF](xref:security/anti-request-forgery) anti-forgery token. We're not modifying data, so we don't need to validate the token in the controller method.
 
-Because the search parameter is in the request body and not the URL, you can't capture that search information to bookmark or share with others. Fix this by specifying the request should be `HTTP GET`:
+Because the search parameter is in the request body and not the URL, you can't capture that search information to bookmark or share with others. Fix this by specifying the request should be `HTTP GET` found in the *Views/Movies/Index.cshtml* file.
 
-[!code-html[](~/tutorials/first-mvc-app/start-mvc/sample/MvcMovie22/Views/Movies/IndexGet.cshtml?highlight=12&range=1-23)]
+[!code-cshtml[](~/tutorials/first-mvc-app/start-mvc/sample/MvcMovie22/Views/Movies/IndexGet.cshtml?highlight=12&range=1-23)]
 
 Now when you submit a search, the URL contains the search query string. Searching will also go to the `HttpGet Index` action method, even if you have a `HttpPost Index` method.
 
@@ -96,9 +97,9 @@ Now when you submit a search, the URL contains the search query string. Searchin
 
 The following markup shows the change to the `form` tag:
 
-```html
+```cshtml
 <form asp-controller="Movies" asp-action="Index" method="get">
-   ```
+```
 
 ## Add Search by genre
 
@@ -127,9 +128,9 @@ When the user searches for the item, the search value is retained in the search 
 
 ## Add search by genre to the Index view
 
-Update `Index.cshtml` as follows:
+Update `Index.cshtml` found in *Views/Movies/* as follows:
 
-[!code-HTML[](~/tutorials/first-mvc-app/start-mvc/sample/MvcMovie22/Views/Movies/IndexFormGenreNoRating.cshtml?highlight=1,15,16,17,28,31,34,37,43)]
+[!code-cshtml[](~/tutorials/first-mvc-app/start-mvc/sample/MvcMovie22/Views/Movies/IndexFormGenreNoRating.cshtml?highlight=1,15,16,17,19,28,31,34,37,43)]
 
 Examine the lambda expression used in the following HTML Helper:
 

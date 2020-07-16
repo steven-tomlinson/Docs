@@ -24,7 +24,7 @@ Open the *Models/Movie.cs* file and add a `Rating` property:
 
 ::: moniker-end
 
-Because you've added a new field to the `Movie` class, you also need to update the binding whitelist so this new property will be included. In *MoviesController.cs*, update the `[Bind]` attribute for both the `Create` and `Edit` action methods to include the `Rating` property:
+Because you've added a new field to the `Movie` class, you also need to update the binding's included properties so this new property is included. In *MoviesController.cs*, update the `[Bind]` attribute for both the `Create` and `Edit` action methods to include the `Rating` property:
 
 ```csharp
 [Bind("ID,Title,ReleaseDate,Genre,Price,Rating")]
@@ -56,7 +56,9 @@ There are a few approaches to resolving the error:
 
 For this tutorial, we'll drop and re-create the database when the schema changes. Run the following command from a terminal to drop the db:
 
-`dotnet ef database drop`
+```dotnetcli
+dotnet ef database drop
+```
 
 Update the `SeedData` class so that it provides a value for the new column. A sample change is shown below, but you'll want to make this change for each `new Movie`.
 

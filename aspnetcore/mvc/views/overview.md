@@ -3,12 +3,13 @@ title: Views in ASP.NET Core MVC
 author: ardalis
 description: Learn how views handle the app's data presentation and user interaction in ASP.NET Core MVC.
 ms.author: riande
-ms.date: 12/12/2017
+ms.date: 12/05/2019
+no-loc: [Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
 uid: mvc/views/overview
 ---
 # Views in ASP.NET Core MVC
 
-By [Steve Smith](https://ardalis.com/) and [Luke Latham](https://github.com/guardrex)
+By [Steve Smith](https://ardalis.com/)
 
 This document explains views used in ASP.NET Core MVC applications. For information on Razor Pages, see [Introduction to Razor Pages](xref:razor-pages/index).
 
@@ -129,7 +130,7 @@ The most robust approach is to specify a [model](xref:mvc/models/model-binding) 
 
 Using a viewmodel to pass data to a view allows the view to take advantage of *strong* type checking. *Strong typing* (or *strongly typed*) means that every variable and constant has an explicitly defined type (for example, `string`, `int`, or `DateTime`). The validity of types used in a view is checked at compile time.
 
-[Visual Studio](https://www.visualstudio.com/vs/) and [Visual Studio Code](https://code.visualstudio.com/) list strongly typed class members using a feature called [IntelliSense](/visualstudio/ide/using-intellisense). When you want to see the properties of a viewmodel, type the variable name for the viewmodel followed by a period (`.`). This helps you write code faster with fewer errors.
+[Visual Studio](https://visualstudio.microsoft.com) and [Visual Studio Code](https://code.visualstudio.com/) list strongly typed class members using a feature called [IntelliSense](/visualstudio/ide/using-intellisense). When you want to see the properties of a viewmodel, type the variable name for the viewmodel followed by a period (`.`). This helps you write code faster with fewer errors.
 
 Specify a model using the `@model` directive. Use the model with `@Model`:
 
@@ -196,7 +197,7 @@ In addition to strongly typed views, views have access to a *weakly typed* (also
 | View and a [layout view](xref:mvc/views/layout)   | Setting the **\<title>** element content in the layout view from a view file.  |
 | [Partial view](xref:mvc/views/partial) and a view | A widget that displays data based on the webpage that the user requested.      |
 
-This collection can be referenced through either the `ViewData` or `ViewBag` properties on controllers and views. The `ViewData` property is a dictionary of weakly typed objects. The `ViewBag` property is a wrapper around `ViewData` that provides dynamic properties for the underlying `ViewData` collection.
+This collection can be referenced through either the `ViewData` or `ViewBag` properties on controllers and views. The `ViewData` property is a dictionary of weakly typed objects. The `ViewBag` property is a wrapper around `ViewData` that provides dynamic properties for the underlying `ViewData` collection. Note: Key lookups are case-insensitive for both `ViewData` and `ViewBag`.
 
 `ViewData` and `ViewBag` are dynamically resolved at runtime. Since they don't offer compile-time type checking, both are generally more error-prone than using a viewmodel. For that reason, some developers prefer to minimally or never use `ViewData` and `ViewBag`.
 
@@ -246,9 +247,9 @@ Work with the data in a view:
 
 **ViewData attribute**
 
-Another approach that uses the [ViewDataDictionary](/dotnet/api/microsoft.aspnetcore.mvc.viewfeatures.viewdatadictionary) is [ViewDataAttribute](/dotnet/api/microsoft.aspnetcore.mvc.viewdataattribute). Properties on controllers or Razor Page models decorated with `[ViewData]` have their values stored and loaded from the dictionary.
+Another approach that uses the [ViewDataDictionary](/dotnet/api/microsoft.aspnetcore.mvc.viewfeatures.viewdatadictionary) is [ViewDataAttribute](/dotnet/api/microsoft.aspnetcore.mvc.viewdataattribute). Properties on controllers or Razor Page models marked with the `[ViewData]` attribute have their values stored and loaded from the dictionary.
 
-In the following example, the Home controller contains a `Title` property decorated with `[ViewData]`. The `About` method sets the title for the About view:
+In the following example, the Home controller contains a `Title` property marked with `[ViewData]`. The `About` method sets the title for the About view:
 
 ```csharp
 public class HomeController : Controller
@@ -264,12 +265,6 @@ public class HomeController : Controller
         return View();
     }
 }
-```
-
-In the About view, access the `Title` property as a model property:
-
-```cshtml
-<h1>@Model.Title</h1>
 ```
 
 In the layout, the title is read from the ViewData dictionary:
